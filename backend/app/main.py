@@ -5,13 +5,13 @@ from typing import Optional
 
 app = FastAPI(title="NetSage AI API", version="1.0.0")
 
-# 1. Allow CORS from Next.js
+# Enable CORS for Vercel, Localhost, and cross-origin requests
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["*"],  # Allows requests from any origin (Vercel, Localhost, etc.)
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["*"],  # Allows GET, POST, OPTIONS, PUT, DELETE
+    allow_headers=["*"],  # Allows all headers
 )
 
 class DiagnosisRequest(BaseModel):
@@ -62,12 +62,12 @@ def run_diagnosis(req: DiagnosisRequest):
 
         if findings:
             root_cause = f"Rule match verified: Configuration discrepancy on {device} ({category}). Interface state or tagging parameters prevent traffic."
-            fix = f"configure terminal\ninterface GigabitEthernet0/1\n no shutdown\n switchport mode trunk\n end"
+            fix = "configure terminal\ninterface GigabitEthernet0/1\n no shutdown\n switchport mode trunk\n end"
             confidence = 0.98
             conf_level = "High Confidence (Rule Engine)"
         else:
             root_cause = f"AI Dynamic Fallback: Protocol telemetry analysis for {device} suggests reviewing MTU size, encapsulation, and neighbor timers."
-            fix = f"configure terminal\ninterface GigabitEthernet0/1\n mtu 1500\n switchport trunk native vlan 1\n end"
+            fix = "configure terminal\ninterface GigabitEthernet0/1\n mtu 1500\n switchport trunk native vlan 1\n end"
             confidence = 0.88
             conf_level = "Moderate Confidence (AI Fallback)"
 
